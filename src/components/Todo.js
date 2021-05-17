@@ -1,5 +1,16 @@
+import { useTodosDispatch } from '../context/TodosDispatchContext'
+
 const Todo = (props) => {
-  const { todo, deleteTodo, toggleCompleteTodo } = props
+  const dispatch = useTodosDispatch()
+  const { todo } = props
+  const deleteTodo = (task) => {
+    //setTodos(todos.filter((el) => el.id !== task.id))
+    dispatch({ type: 'DELETE', payload: task })
+  }
+
+  const toggleCompleteTodo = (task) => {
+    dispatch({ type: 'TOGGLE', payload: task })
+  }
   const style = {
     textDecoration: todo.isCompleted ? "line-through" : "none"
   }

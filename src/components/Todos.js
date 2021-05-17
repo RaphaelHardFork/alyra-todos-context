@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useReducer } from "react"
 import TodosList from "./TodosList"
 import AddTodoForm from "./AddTodoForm"
-import { v4 as uuidv4 } from "uuid"
+
+import { todosReducer } from '../reducers/todosReducer'
+import { TodosDispatchContext } from '../context/TodosDispatchContext'
 
 const initialTodos = [
   {
@@ -27,52 +29,25 @@ const initialTodos = [
 ]
 
 const Todos = () => {
-  const [todos, setTodos] = useState(() => {
-    return (
-      JSON.parse(window.localStorage.getItem("my-new-todos")) || initialTodos
-    )
+  const [state, dispatch] = useReducer(todosReducer, initialTodos, (initialTodos) => {
+    return JSON.parse(window.localStorage.getItem("my-new-todos")) || initialTodos
   })
 
+
   useEffect(() => {
-    window.localStorage.setItem("my-new-todos", JSON.stringify(todos))
-  }, [todos])
+    window.localStorage.setItem("my-new-todos", JSON.stringify(state))
+  }, [state])
 
-  const addTodo = (text) => {
-    const newTodo = {
-      text,
-      isCompleted: false,
-      id: uuidv4()
-    }
-    setTodos([...todos, newTodo])
-  }
 
-  const deleteTodo = (task) => {
-    setTodos(todos.filter((el) => el.id !== task.id))
-  }
 
-  const toggleCompleteTodo = (task) => {
-    setTodos(
-      todos.map((el) => {
-        if (el.id === task.id) {
-          return {
-            ...el,
-            isCompleted: !el.isCompleted
-          }
-        }
-        return el
-      })
-    )
-  }
 
   return (
     <main>
-      <h2 className="text-center">Ma liste de tâches ({todos.length})</h2>
-      <TodosList
-        todos={todos}
-        deleteTodo={deleteTodo}
-        toggleCompleteTodo={toggleCompleteTodo}
-      />
-      <AddTodoForm addTodo={addTodo} />
+      <h2 className="text-center">Ma liste de tâches ({state.length})</h2>
+      <TodosDispatchContext.Provider value={dispatch}>
+        <TodosList todos={state} />
+        <AddTodoForm />
+      </TodosDispatchContext.Provider>
     </main>
   )
 }

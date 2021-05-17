@@ -1,5 +1,17 @@
-const AddTodoForm = (props) => {
-  const { addTodo } = props
+import { useTodosDispatch } from '../context/TodosDispatchContext'
+import { v4 as uuidv4 } from "uuid"
+
+const AddTodoForm = () => {
+  const disptach = useTodosDispatch()
+  const addTodo = (text) => {
+    const newTodo = {
+      text,
+      isCompleted: false,
+      id: uuidv4()
+    }
+    //setTodos([...todos, newTodo])
+    disptach({ type: 'ADD', payload: newTodo })
+  }
   const handleFormSubmit = (event) => {
     event.preventDefault()
     const newTodoText = event.target.elements.todo.value
